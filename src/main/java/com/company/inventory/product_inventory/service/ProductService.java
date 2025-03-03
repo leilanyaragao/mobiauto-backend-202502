@@ -9,6 +9,7 @@ import com.company.inventory.product_inventory.model.Warehouse;
 import com.company.inventory.product_inventory.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +40,7 @@ public class ProductService {
     }
     public Product getProductBySku(Integer sku) {
         return productRepository.findById(sku)
-                .orElseThrow(() -> new ProductNotFoundException("Product with sku " + sku + " not found."));
+                .orElseThrow(() -> new NotFoundException("Product with sku " + sku + " not found."));
     }
 
     public void deleteProduct(Integer sku) {
@@ -133,7 +134,7 @@ public class ProductService {
         } else if ("increment".equalsIgnoreCase(operation)) {
             warehouse.setQuantity(currentQuantity + quantityChange);
         } else {
-            throw new InvalidOperationException("Invalid operation type. Use 'increment' or 'decrement'.");
+            throw new IllegalArgumentException("Invalid operation type. Use 'increment' or 'decrement'.");
         }
     }
 
@@ -149,7 +150,7 @@ public class ProductService {
     public List<ProductResponseDTO> getProductsByLocality(String locality) {
         List<Product> products = productRepository.findByWarehouseLocality(locality);
         if (products.isEmpty()) {
-            throw new ProductNotFoundException("Nenhum produto encontrado para a localidade: " + locality);
+            throw new ProductNotFoundException("No products found for the location: " + locality);
         }
 
         List<ProductResponseDTO> productResponseDTOS = new ArrayList<>();
@@ -170,7 +171,7 @@ public class ProductService {
     public List<ProductResponseDTO> getProductsByType(String type) {
         List<Product> products = productRepository.findByWarehouseType(type);
         if (products.isEmpty()) {
-            throw new ProductNotFoundException("Nenhum produto encontrado para o tipo: " + type);
+            throw new ProductNotFoundException("No products found for type: " + type);
         }
 
         List<ProductResponseDTO> productResponseDTOS = new ArrayList<>();

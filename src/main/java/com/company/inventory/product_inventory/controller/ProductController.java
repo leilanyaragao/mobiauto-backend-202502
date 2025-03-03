@@ -6,7 +6,6 @@ import com.company.inventory.product_inventory.model.Warehouse;
 import com.company.inventory.product_inventory.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -52,22 +51,22 @@ public class ProductController {
     }
 
     @DeleteMapping("/sku/{sku}/delete-warehouse")
-    public ResponseEntity<Product> removeWarehouseFromProduct(
+    @ResponseStatus(HttpStatus.OK)
+    public Product removeWarehouseFromProduct(
             @PathVariable Integer sku,
             @RequestParam String locality,
             @RequestParam String type) {
-        Product updatedProduct = productService.removeWarehouse(sku, locality, type);
-        return ResponseEntity.ok(updatedProduct);
+        return productService.removeWarehouse(sku, locality, type);
     }
 
     @DeleteMapping
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void deleteAllProducts() {
         productService.deleteAllProducts();
     }
 
     @DeleteMapping("/sku/{sku}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     public void deleteProduct(@PathVariable Integer sku) {
         productService.deleteProduct(sku);
     }
@@ -85,13 +84,14 @@ public class ProductController {
     }
 
     @GetMapping("/warehouse-by-locality")
+    @ResponseStatus(HttpStatus.OK)
     public List<ProductResponseDTO> getProductsByLocality(@RequestParam String locality) {
         return productService.getProductsByLocality(locality);
     }
 
     @GetMapping("/warehouse-by-type")
-    public ResponseEntity<List<ProductResponseDTO>> getProductsByType(@RequestParam String type) {
-        List<ProductResponseDTO> products = productService.getProductsByType(type);
-        return ResponseEntity.ok(products);
+    @ResponseStatus(HttpStatus.OK)
+    public List<ProductResponseDTO> getProductsByType(@RequestParam String type) {
+        return productService.getProductsByType(type);
     }
 }
