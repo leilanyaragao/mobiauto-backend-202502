@@ -2,9 +2,7 @@ package com.company.inventory.product_inventory.controller;
 
 import com.company.inventory.product_inventory.data.ProductData;
 import com.company.inventory.product_inventory.data.WarehouseData;
-import com.company.inventory.product_inventory.dto.ProductResponseDTO;
 import com.company.inventory.product_inventory.model.Product;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
