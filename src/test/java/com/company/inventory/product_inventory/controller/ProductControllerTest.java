@@ -62,8 +62,6 @@ class ProductControllerTest {
         assertEquals(15, productController.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
         productController.updateWarehouseQuantity(1,"SP", "ECOMMERCE", 5, "decrement");
         assertEquals(10, productController.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-
-
     }
 
 
