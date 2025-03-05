@@ -38,31 +38,14 @@ public class ProductService {
 
         return productRepository.save(productBySku);
     }
-    public Product getProductBySku(Integer sku) {
-        return productRepository.findById(sku)
-                .orElseThrow(() -> new NotFoundException("Product with sku " + sku + " not found."));
-    }
-
-    public void deleteProduct(Integer sku) {
-        validateProductExistence(sku);
-        productRepository.deleteById(sku);
-    }
-
-    public void deleteAllProducts() {
-        productRepository.deleteAll();
-    }
-
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
-    }
-
 
     public Product addWarehouse(Integer sku, Warehouse warehouse) {
+        validateProductExistence(sku);
         Product product = getProductBySku(sku);
         Optional<Warehouse> existingWarehouse = findWarehouse(product, warehouse);
 
         if (existingWarehouse.isPresent()) {
-            existingWarehouse.get().setQuantity(existingWarehouse.get().getQuantity() + warehouse.getQuantity());
+            throw new WarehouseAlreadyExistsException("This warehouse already exist for this product " + product.getSku() + ". You can update warehouse quantity.");
         } else {
             product.addWarehouse(warehouse);
         }
@@ -70,7 +53,20 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    public Product updateWarehouseQuantity(Integer sku, String locality, String type, int quantityChange, String operation) {
+        validateProductExistence(sku);
+        Product product = getProductBySku(sku);
+        Warehouse warehouse = findWarehouseByLocalityAndType(product, locality, type)
+                .orElseThrow(() -> new WarehouseNotFoundException("Warehouse not found for locality: " + locality + " and type: " + type));
+
+        adjustWarehouseQuantity(warehouse, quantityChange, operation);
+        updateTotalQuantity(product);
+
+        return productRepository.save(product);
+    }
+
     public Product removeWarehouse(Integer sku, String locality, String type) {
+        validateProductExistence(sku);
         Product product = getProductBySku(sku);
         Warehouse warehouse = findWarehouseByLocalityAndType(product, locality, type)
                 .orElseThrow(() -> new WarehouseNotFoundException("Warehouse not found for locality: " + locality + " and type: " + type));
@@ -81,16 +77,64 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product updateWarehouseQuantity(Integer sku, String locality, String type, int quantityChange, String operation) {
-        Product product = getProductBySku(sku);
-        Warehouse warehouse = findWarehouseByLocalityAndType(product, locality, type)
-                .orElseThrow(() -> new WarehouseNotFoundException("Warehouse not found for locality: " + locality + " and type: " + type));
-
-        adjustWarehouseQuantity(warehouse, quantityChange, operation);
-        updateTotalQuantity(product);
-
-        return productRepository.save(product);
+    public void deleteAllProducts() {
+        productRepository.deleteAll();
     }
+
+    public void deleteProductBySku(Integer sku) {
+        validateProductExistence(sku);
+        productRepository.deleteById(sku);
+    }
+
+    public Product getProductBySku(Integer sku) {
+        return productRepository.findById(sku)
+                .orElseThrow(() -> new NotFoundException("Product with sku " + sku + " not found."));
+    }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
+
+    public List<ProductResponseDTO> getProductsByLocality(String locality) {
+        List<Product> products = productRepository.findByWarehouseLocality(locality);
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("No products found for the location: " + locality);
+        }
+
+        List<ProductResponseDTO> productResponseDTOS = new ArrayList<>();
+
+        for (Product product : products) {
+            List<TypeQuantityResponseDTO> typeQuantityResponseDTO = new ArrayList<>();
+            for (Warehouse warehouse : product.getInventory().getWarehouses()) {
+                if (warehouse.getLocality().equals(locality)) {
+                    typeQuantityResponseDTO.add(new TypeQuantityResponseDTO(warehouse.getType(), warehouse.getQuantity()));
+                }
+            }
+            productResponseDTOS.add(new ProductResponseDTO(product.getSku(), product.getName(), null, typeQuantityResponseDTO));
+        }
+
+        return productResponseDTOS;
+    }
+
+    public List<ProductResponseDTO> getProductsByType(String type) {
+        List<Product> products = productRepository.findByWarehouseType(type);
+        if (products.isEmpty()) {
+            throw new ProductNotFoundException("No products found for type: " + type);
+        }
+
+        List<ProductResponseDTO> productResponseDTOS = new ArrayList<>();
+        for (Product product : products) {
+            List<LocationQuantityResponseDTO> locationQuantityResponseDTO = new ArrayList<>();
+            for (Warehouse warehouse : product.getInventory().getWarehouses()) {
+                if (warehouse.getType().equals(type)) {
+                    locationQuantityResponseDTO.add(new LocationQuantityResponseDTO(warehouse.getLocality(), warehouse.getQuantity()));
+                }
+            }
+            productResponseDTOS.add(new ProductResponseDTO(product.getSku(), product.getName(), locationQuantityResponseDTO, null));
+        }
+        return productResponseDTOS;
+    }
+
     private void validateProductExistence(Integer sku) {
         if (!productRepository.existsById(sku)) {
             throw new ProductNotFoundException("Product with sku " + sku + " not found.");
@@ -145,47 +189,4 @@ public class ProductService {
         product.getInventory().setQuantity(totalQuantity);
         product.updateMarketableStatus();
     }
-
-
-    public List<ProductResponseDTO> getProductsByLocality(String locality) {
-        List<Product> products = productRepository.findByWarehouseLocality(locality);
-        if (products.isEmpty()) {
-            throw new ProductNotFoundException("No products found for the location: " + locality);
-        }
-
-        List<ProductResponseDTO> productResponseDTOS = new ArrayList<>();
-
-        for (Product product : products) {
-            List<TypeQuantityResponseDTO> typeQuantityResponseDTO = new ArrayList<>();
-            for (Warehouse warehouse : product.getInventory().getWarehouses()) {
-                if (warehouse.getLocality().equals(locality)) {
-                    typeQuantityResponseDTO.add(new TypeQuantityResponseDTO(warehouse.getType(), warehouse.getQuantity()));
-                }
-            }
-            productResponseDTOS.add(new ProductResponseDTO(product.getSku(), product.getName(), null, typeQuantityResponseDTO));
-        }
-
-        return productResponseDTOS;
-    }
-
-    public List<ProductResponseDTO> getProductsByType(String type) {
-        List<Product> products = productRepository.findByWarehouseType(type);
-        if (products.isEmpty()) {
-            throw new ProductNotFoundException("No products found for type: " + type);
-        }
-
-        List<ProductResponseDTO> productResponseDTOS = new ArrayList<>();
-        for (Product product : products) {
-            List<LocationQuantityResponseDTO> locationQuantityResponseDTO = new ArrayList<>();
-            for (Warehouse warehouse : product.getInventory().getWarehouses()) {
-                if (warehouse.getType().equals(type)) {
-                    locationQuantityResponseDTO.add(new LocationQuantityResponseDTO(warehouse.getLocality(), warehouse.getQuantity()));
-                }
-            }
-            productResponseDTOS.add(new ProductResponseDTO(product.getSku(), product.getName(), locationQuantityResponseDTO, null));
-        }
-        return productResponseDTOS;
-    }
-
-
 }

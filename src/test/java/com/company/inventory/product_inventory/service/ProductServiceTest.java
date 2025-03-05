@@ -3,7 +3,6 @@ package com.company.inventory.product_inventory.service;
 import com.company.inventory.product_inventory.data.ProductData;
 import com.company.inventory.product_inventory.data.WarehouseData;
 import com.company.inventory.product_inventory.model.Product;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -79,7 +78,7 @@ class ProductServiceTest {
     @Test
     void deleteProduct() {
         assertNotNull(productService.getProductBySku(1));
-        productService.deleteProduct(1);
+        productService.deleteProductBySku(1);
     }
 
     @Test

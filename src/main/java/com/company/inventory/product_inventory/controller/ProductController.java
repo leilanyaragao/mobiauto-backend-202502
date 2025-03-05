@@ -68,7 +68,7 @@ public class ProductController {
     @DeleteMapping("/sku/{sku}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteProduct(@PathVariable Integer sku) {
-        productService.deleteProduct(sku);
+        productService.deleteProductBySku(sku);
     }
 
     @GetMapping("/sku/{sku}")
