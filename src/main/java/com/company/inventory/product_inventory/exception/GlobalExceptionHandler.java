@@ -38,4 +38,8 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(message.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException message) {
+        return new ResponseEntity<>(message.getMessage(), HttpStatus.BAD_REQUEST);
+    }
 }
