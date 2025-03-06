@@ -5,6 +5,7 @@ import com.company.inventory.product_inventory.dto.ProductResponseDTO;
 import com.company.inventory.product_inventory.dto.TypeQuantityResponseDTO;
 import com.company.inventory.product_inventory.exception.*;
 import com.company.inventory.product_inventory.model.Product;
+import com.company.inventory.product_inventory.model.QuantityOperation;
 import com.company.inventory.product_inventory.model.Warehouse;
 import com.company.inventory.product_inventory.model.WarehouseType;
 import com.company.inventory.product_inventory.repository.ProductRepository;
@@ -54,7 +55,7 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void updateWarehouseQuantity(Integer sku, String locality, WarehouseType type, int quantityChange, String operation) {
+    public void updateWarehouseQuantity(Integer sku, String locality, WarehouseType type, int quantityChange, QuantityOperation operation) {
         validateProductExistence(sku);
         Product product = getProductBySku(sku);
         Warehouse warehouse = findWarehouseByLocalityAndType(product, locality, type)
@@ -169,14 +170,14 @@ public class ProductService {
                 .findFirst();
     }
 
-    private void adjustWarehouseQuantity(Warehouse warehouse, int quantityChange, String operation) {
+    private void adjustWarehouseQuantity(Warehouse warehouse, int quantityChange, QuantityOperation operation) {
         int currentQuantity = warehouse.getQuantity();
-        if ("decrement".equalsIgnoreCase(operation)) {
+        if (operation.equals(QuantityOperation.DECREMENT)) {
             if (quantityChange > currentQuantity) {
                 throw new InsufficientQuantityException("Cannot subtract more than the available quantity.");
             }
             warehouse.setQuantity(currentQuantity - quantityChange);
-        } else if ("increment".equalsIgnoreCase(operation)) {
+        } else if (operation.equals(QuantityOperation.INCREMENT)) {
             warehouse.setQuantity(currentQuantity + quantityChange);
         } else {
             throw new IllegalArgumentException("Invalid operation type. Use 'increment' or 'decrement'.");

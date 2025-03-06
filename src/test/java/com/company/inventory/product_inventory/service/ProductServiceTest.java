@@ -3,6 +3,7 @@ package com.company.inventory.product_inventory.service;
 import com.company.inventory.product_inventory.data.ProductData;
 import com.company.inventory.product_inventory.data.WarehouseData;
 import com.company.inventory.product_inventory.model.Product;
+import com.company.inventory.product_inventory.model.QuantityOperation;
 import com.company.inventory.product_inventory.model.WarehouseType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,9 +57,9 @@ class ProductServiceTest {
     @Test
     void updateWarehouseQuantity() {
         assertEquals(12, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-        productService.updateWarehouseQuantity(1,"SP", WarehouseType.PHYSICAL_STORE, 3, "increment");
+        productService.updateWarehouseQuantity(1,"SP", WarehouseType.PHYSICAL_STORE, 3, QuantityOperation.INCREMENT);
         assertEquals(15, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-        productService.updateWarehouseQuantity(1,"SP", WarehouseType.ECOMMERCE, 5, "decrement");
+        productService.updateWarehouseQuantity(1,"SP", WarehouseType.ECOMMERCE, 5, QuantityOperation.DECREMENT);
         assertEquals(10, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
     }
 

@@ -2,6 +2,7 @@ package com.company.inventory.product_inventory.controller;
 
 import com.company.inventory.product_inventory.dto.ProductResponseDTO;
 import com.company.inventory.product_inventory.model.Product;
+import com.company.inventory.product_inventory.model.QuantityOperation;
 import com.company.inventory.product_inventory.model.Warehouse;
 import com.company.inventory.product_inventory.model.WarehouseType;
 import com.company.inventory.product_inventory.service.ProductService;
@@ -47,7 +48,7 @@ public class ProductController {
             @RequestParam String locality,
             @RequestParam WarehouseType type,
             @RequestParam int quantityChange,
-            @RequestParam String operation) {
+            @RequestParam QuantityOperation operation) {
         productService.updateWarehouseQuantity(sku, locality, type, quantityChange, operation);
     }
 
