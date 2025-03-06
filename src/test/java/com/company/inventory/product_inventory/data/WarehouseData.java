@@ -32,4 +32,8 @@ public class WarehouseData {
     public static Warehouse getWarehousesEcommerceMG(){
         return new Warehouse("MG", 1, "ECOMMERCE");
     }
+
+    public static Warehouse getWarehousesEcommerceSPBrazilianChocolate(){
+        return new Warehouse("SP", 2, "ECOMMERCE");
+    }
 }
