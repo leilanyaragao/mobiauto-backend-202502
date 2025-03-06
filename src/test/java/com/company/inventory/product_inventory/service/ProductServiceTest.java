@@ -57,7 +57,7 @@ class ProductServiceTest {
     @Test
     void updateWarehouseQuantity() {
         assertEquals(12, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-        productService.updateWarehouseQuantity(1,"SP", WarehouseType.PHYSICAL_STORE, 3, QuantityOperation.INCREMENT);
+        productService.updateWarehouseQuantity(1,"SP", WarehouseType.ECOMMERCE, 3, QuantityOperation.INCREMENT);
         assertEquals(15, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
         productService.updateWarehouseQuantity(1,"SP", WarehouseType.ECOMMERCE, 5, QuantityOperation.DECREMENT);
         assertEquals(10, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
