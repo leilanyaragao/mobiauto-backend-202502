@@ -6,6 +6,7 @@ import com.company.inventory.product_inventory.dto.TypeQuantityResponseDTO;
 import com.company.inventory.product_inventory.exception.*;
 import com.company.inventory.product_inventory.model.Product;
 import com.company.inventory.product_inventory.model.Warehouse;
+import com.company.inventory.product_inventory.model.WarehouseType;
 import com.company.inventory.product_inventory.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,26 +21,26 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public Product createProduct(Product product) {
+    public void createProduct(Product product) {
         if (productRepository.existsById(product.getSku())) {
             throw new ProductAlreadyExistsException("Product with sku " + product.getSku() + " already exists.");
         }
         product.getInventory().quantity();
         product.updateMarketableStatus();
-        return productRepository.save(product);
+        productRepository.save(product);
     }
 
-    public Product updateProduct(Integer sku, Product product) {
+    public void updateProduct(Integer sku, Product product) {
         validateProductExistence(sku);
         validateSkuConsistency(sku, product);
 
         Product productBySku = productRepository.findProductBySku(sku);
         updateProductFields(product, productBySku);
 
-        return productRepository.save(productBySku);
+        productRepository.save(productBySku);
     }
 
-    public Product addWarehouse(Integer sku, Warehouse warehouse) {
+    public void addWarehouse(Integer sku, Warehouse warehouse) {
         validateProductExistence(sku);
         Product product = getProductBySku(sku);
         Optional<Warehouse> existingWarehouse = findWarehouse(product, warehouse);
@@ -50,10 +51,10 @@ public class ProductService {
             product.addWarehouse(warehouse);
         }
 
-        return productRepository.save(product);
+        productRepository.save(product);
     }
 
-    public Product updateWarehouseQuantity(Integer sku, String locality, String type, int quantityChange, String operation) {
+    public void updateWarehouseQuantity(Integer sku, String locality, WarehouseType type, int quantityChange, String operation) {
         validateProductExistence(sku);
         Product product = getProductBySku(sku);
         Warehouse warehouse = findWarehouseByLocalityAndType(product, locality, type)
@@ -62,10 +63,10 @@ public class ProductService {
         adjustWarehouseQuantity(warehouse, quantityChange, operation);
         updateTotalQuantity(product);
 
-        return productRepository.save(product);
+        productRepository.save(product);
     }
 
-    public Product removeWarehouse(Integer sku, String locality, String type) {
+    public void removeWarehouse(Integer sku, String locality, WarehouseType type) {
         validateProductExistence(sku);
         Product product = getProductBySku(sku);
         Warehouse warehouse = findWarehouseByLocalityAndType(product, locality, type)
@@ -74,7 +75,7 @@ public class ProductService {
         product.getInventory().getWarehouses().remove(warehouse);
         updateTotalQuantity(product);
 
-        return productRepository.save(product);
+        productRepository.save(product);
     }
 
     public void deleteAllProducts() {
@@ -116,7 +117,7 @@ public class ProductService {
         return productResponseDTOS;
     }
 
-    public List<ProductResponseDTO> getProductsByType(String type) {
+    public List<ProductResponseDTO> getProductsByType(WarehouseType type) {
         List<Product> products = productRepository.findByWarehouseType(type);
         if (products.isEmpty()) {
             throw new ProductNotFoundException("No products found for type: " + type);
@@ -162,7 +163,7 @@ public class ProductService {
                 .findFirst();
     }
 
-    private Optional<Warehouse> findWarehouseByLocalityAndType(Product product, String locality, String type) {
+    private Optional<Warehouse> findWarehouseByLocalityAndType(Product product, String locality, WarehouseType type) {
         return product.getInventory().getWarehouses().stream()
                 .filter(w -> w.getLocality().equals(locality) && w.getType().equals(type))
                 .findFirst();

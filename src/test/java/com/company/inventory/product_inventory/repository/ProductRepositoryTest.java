@@ -2,7 +2,7 @@ package com.company.inventory.product_inventory.repository;
 
 import com.company.inventory.product_inventory.data.ProductData;
 import com.company.inventory.product_inventory.model.Product;
-import org.junit.jupiter.api.AfterEach;
+import com.company.inventory.product_inventory.model.WarehouseType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -49,7 +49,7 @@ class ProductRepositoryTest {
 
     @Test
     void findByWarehouseType() {
-        List<Product> productsByWarehouseType = productRepository.findByWarehouseType("PHYSICAL_STORE");
+        List<Product> productsByWarehouseType = productRepository.findByWarehouseType(WarehouseType.PHYSICAL_STORE);
         assertNotNull(productsByWarehouseType);
         assertEquals(2, productsByWarehouseType.size());
         assertEquals("Brazilian chocolate", productsByWarehouseType.get(0).getName());

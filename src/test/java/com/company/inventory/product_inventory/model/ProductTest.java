@@ -5,15 +5,16 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProductTest {
 
     @Test
     void createProductTest() {
         List<Warehouse> warehouses = new ArrayList<>();
-        warehouses.add(new Warehouse("SP", 12, "ECOMMERCE"));
-        warehouses.add(new Warehouse("MOEMA", 3, "PHYSICAL_STORE"));
+        warehouses.add(new Warehouse("SP", 12, WarehouseType.ECOMMERCE));
+        warehouses.add(new Warehouse("MOEMA", 3, WarehouseType.PHYSICAL_STORE));
 
         Inventory inventory = new Inventory(15, warehouses);
 

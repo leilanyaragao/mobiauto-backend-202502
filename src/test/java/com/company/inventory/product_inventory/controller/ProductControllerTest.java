@@ -3,6 +3,7 @@ package com.company.inventory.product_inventory.controller;
 import com.company.inventory.product_inventory.data.ProductData;
 import com.company.inventory.product_inventory.data.WarehouseData;
 import com.company.inventory.product_inventory.model.Product;
+import com.company.inventory.product_inventory.model.WarehouseType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -56,9 +57,9 @@ class ProductControllerTest {
     @Test
     void updateWarehouseQuantity() {
         assertEquals(12, productController.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-        productController.updateWarehouseQuantity(1,"SP", "ECOMMERCE", 3, "increment");
+        productController.updateWarehouseQuantity(1,"SP", WarehouseType.ECOMMERCE, 3, "increment");
         assertEquals(15, productController.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-        productController.updateWarehouseQuantity(1,"SP", "ECOMMERCE", 5, "decrement");
+        productController.updateWarehouseQuantity(1,"SP", WarehouseType.ECOMMERCE, 5, "decrement");
         assertEquals(10, productController.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
     }
 
@@ -66,7 +67,7 @@ class ProductControllerTest {
     @Test
     void removeWarehouseFromProduct() {
         assertEquals(2, productController.getProductBySku(1).getInventory().getWarehouses().size());
-        productController.removeWarehouseFromProduct(1,"SP", "ECOMMERCE");
+        productController.removeWarehouseFromProduct(1,"SP", WarehouseType.ECOMMERCE);
         assertEquals(1, productController.getProductBySku(1).getInventory().getWarehouses().size());
     }
 
@@ -103,7 +104,7 @@ class ProductControllerTest {
 
     @Test
     void getProductsByType() {
-        assertEquals(2, productController.getProductsByType("ECOMMERCE").size());
-        assertEquals(2, productController.getProductsByType("PHYSICAL_STORE").size());
+        assertEquals(2, productController.getProductsByType(WarehouseType.ECOMMERCE).size());
+        assertEquals(2, productController.getProductsByType(WarehouseType.PHYSICAL_STORE).size());
     }
 }

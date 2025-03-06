@@ -3,6 +3,7 @@ package com.company.inventory.product_inventory.controller;
 import com.company.inventory.product_inventory.dto.ProductResponseDTO;
 import com.company.inventory.product_inventory.model.Product;
 import com.company.inventory.product_inventory.model.Warehouse;
+import com.company.inventory.product_inventory.model.WarehouseType;
 import com.company.inventory.product_inventory.service.ProductService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,42 +22,42 @@ public class ProductController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Product createProduct(@RequestBody Product product) {
-        return productService.createProduct(product);
+    public void createProduct(@RequestBody Product product) {
+        productService.createProduct(product);
     }
 
     @PutMapping("/sku/{sku}")
     @ResponseStatus(HttpStatus.OK)
-    public Product updateProduct(@PathVariable Integer sku, @RequestBody Product product) {
-        return productService.updateProduct(sku, product);
+    public void updateProduct(@PathVariable Integer sku, @RequestBody Product product) {
+        productService.updateProduct(sku, product);
     }
 
     @PatchMapping("/sku/{sku}/add-warehouse")
     @ResponseStatus(HttpStatus.OK)
-    public Product addWarehouseToProduct(
+    public void addWarehouseToProduct(
             @PathVariable Integer sku,
             @RequestBody Warehouse warehouse) {
-        return productService.addWarehouse(sku, warehouse);
+        productService.addWarehouse(sku, warehouse);
     }
 
     @PatchMapping("/sku/{sku}/update-warehouse-quantity")
     @ResponseStatus(HttpStatus.OK)
-    public Product updateWarehouseQuantity(
+    public void updateWarehouseQuantity(
             @PathVariable Integer sku,
             @RequestParam String locality,
-            @RequestParam String type,
+            @RequestParam WarehouseType type,
             @RequestParam int quantityChange,
             @RequestParam String operation) {
-        return productService.updateWarehouseQuantity(sku, locality, type, quantityChange, operation);
+        productService.updateWarehouseQuantity(sku, locality, type, quantityChange, operation);
     }
 
     @DeleteMapping("/sku/{sku}/delete-warehouse")
     @ResponseStatus(HttpStatus.OK)
-    public Product removeWarehouseFromProduct(
+    public void removeWarehouseFromProduct(
             @PathVariable Integer sku,
             @RequestParam String locality,
-            @RequestParam String type) {
-        return productService.removeWarehouse(sku, locality, type);
+            @RequestParam WarehouseType type) {
+        productService.removeWarehouse(sku, locality, type);
     }
 
     @DeleteMapping
@@ -91,7 +92,7 @@ public class ProductController {
 
     @GetMapping("/warehouse-by-type")
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductResponseDTO> getProductsByType(@RequestParam String type) {
+    public List<ProductResponseDTO> getProductsByType(@RequestParam WarehouseType type) {
         return productService.getProductsByType(type);
     }
 }

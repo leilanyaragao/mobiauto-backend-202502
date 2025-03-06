@@ -12,5 +12,5 @@ import lombok.Setter;
 public class Warehouse {
     private String locality;
     private Integer quantity;
-    private String type;
+    private WarehouseType type;
 }

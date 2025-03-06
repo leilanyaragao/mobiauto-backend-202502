@@ -3,6 +3,7 @@ package com.company.inventory.product_inventory.service;
 import com.company.inventory.product_inventory.data.ProductData;
 import com.company.inventory.product_inventory.data.WarehouseData;
 import com.company.inventory.product_inventory.model.Product;
+import com.company.inventory.product_inventory.model.WarehouseType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -55,16 +56,16 @@ class ProductServiceTest {
     @Test
     void updateWarehouseQuantity() {
         assertEquals(12, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-        productService.updateWarehouseQuantity(1,"SP", "ECOMMERCE", 3, "increment");
+        productService.updateWarehouseQuantity(1,"SP", WarehouseType.PHYSICAL_STORE, 3, "increment");
         assertEquals(15, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
-        productService.updateWarehouseQuantity(1,"SP", "ECOMMERCE", 5, "decrement");
+        productService.updateWarehouseQuantity(1,"SP", WarehouseType.ECOMMERCE, 5, "decrement");
         assertEquals(10, productService.getProductBySku(1).getInventory().getWarehouses().getFirst().getQuantity());
     }
 
     @Test
     void removeWarehouse() {
         assertEquals(2, productService.getProductBySku(1).getInventory().getWarehouses().size());
-        productService.removeWarehouse(1,"SP", "ECOMMERCE");
+        productService.removeWarehouse(1,"SP", WarehouseType.ECOMMERCE);
         assertEquals(1, productService.getProductBySku(1).getInventory().getWarehouses().size());
     }
 
@@ -101,7 +102,7 @@ class ProductServiceTest {
 
     @Test
     void getProductsByType() {
-        assertEquals(2, productService.getProductsByType("ECOMMERCE").size());
-        assertEquals(2, productService.getProductsByType("PHYSICAL_STORE").size());
+        assertEquals(2, productService.getProductsByType(WarehouseType.ECOMMERCE).size());
+        assertEquals(2, productService.getProductsByType(WarehouseType.PHYSICAL_STORE).size());
     }
 }
